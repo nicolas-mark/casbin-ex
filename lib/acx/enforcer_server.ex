@@ -188,6 +188,15 @@ defmodule Acx.EnforcerServer do
   end
 
   @doc """
+  Return a fresh enforcer with adapter.
+
+  See `Enforcer.init/2` for more details.
+  """
+  def reset_configuration(ename, {cfile, adapter}) do
+    GenServer.call(via_tuple(ename), {:reset_configuration, {cfile, adapter}})
+  end
+
+  @doc """
   Return a fresh enforcer.
 
   See `Enforcer.init/1` for more details.
