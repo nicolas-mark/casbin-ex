@@ -347,6 +347,17 @@ defmodule Acx.EnforcerServer do
     end
   end
 
+  def handle_call({:reset_configuration, {cfile, adapter}}, _from, enforcer) do
+    case Enforcer.init(cfile, adapter) do
+      {:error, reason} ->
+        {:reply, {:error, reason}, enforcer}
+
+      {:ok, new_enforcer} ->
+        :ets.insert(:enforcers_table, {self_name(), new_enforcer})
+        {:reply, :ok, new_enforcer}
+    end
+  end
+
   def handle_call({:reset_configuration, cfile}, _from, enforcer) do
     case Enforcer.init(cfile) do
       {:error, reason} ->
