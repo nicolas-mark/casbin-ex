@@ -33,5 +33,20 @@ defmodule Acx.Persist.EctoAdapterTest do
 
       assert loaded === expected
     end
+
+    test "updates policy" do
+      expected = %CasbinRule{id: 5, ptype: "p", v0: "bob", v1: "blog_post", v2: "create"}
+
+      assert {:ok, ^expected} =
+               with(
+                 adapter <- Acx.Persist.EctoAdapter.new(@repo),
+                 do:
+                   Acx.Persist.PersistAdapter.update_policy(
+                     adapter,
+                     {:p, ["bob", "blog_post", "read"]},
+                     {:p, ["bob", "blog_post", "create"]}
+                   )
+               )
+    end
   end
 end

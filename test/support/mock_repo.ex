@@ -34,6 +34,18 @@ defmodule Acx.Persist.MockRepo do
       def delete_all(queryset) do
         {1, nil}
       end
+
+      def get_by(CasbinRule, clauses, opts \\ []) do
+        all(CasbinRule, [])
+        |> Enum.find(fn rule ->
+          Map.from_struct(rule)
+          |> Map.take(Map.keys(clauses)) == clauses
+        end)
+      end
+
+      def update(%Changeset{} = changeset) do
+        {:ok, Changeset.apply_changes(changeset)}
+      end
     end
   end
 end
