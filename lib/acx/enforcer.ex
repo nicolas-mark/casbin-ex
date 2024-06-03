@@ -107,6 +107,20 @@ defmodule Acx.Enforcer do
     end
   end
 
+  def update_policy(
+        %__MODULE__{persist_adapter: adapter} = enforcer,
+        {_key, _attrs} = rule,
+        {_new_key, _new_attrs} = new_rule
+      ) do
+    with {:ok, enforcer} <- load_policy(enforcer, rule),
+         {:ok, adapter} <- PersistAdapter.update_policy(adapter, rule, new_rule) do
+      %{enforcer | persist_adapter: adapter}
+    else
+      {:error, reason} -> {:error, reason}
+      true -> {:error, :already_existed}
+    end
+  end
+
   @doc """
   Adds a new policy rule with key given by `key` and a list of attribute
   values `attr_values` to the enforcer.

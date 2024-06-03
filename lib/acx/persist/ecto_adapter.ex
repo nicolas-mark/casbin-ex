@@ -175,6 +175,8 @@ defmodule Acx.Persist.EctoAdapter do
            updated_policy <- CasbinRule.policy_to_map(updated_policy) do
         CasbinRule.changeset(rule, updated_policy)
         |> repo.update()
+
+        {:ok, adapter}
       else
         {:error, %Ecto.Changeset{errors: errors}} ->
           {:error, errors}
