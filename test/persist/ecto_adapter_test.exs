@@ -33,5 +33,18 @@ defmodule Acx.Persist.EctoAdapterTest do
 
       assert loaded === expected
     end
+
+    test "updates policy" do
+      assert {:ok, %Acx.Persist.EctoAdapter{repo: @repo}} =
+               with(
+                 adapter <- Acx.Persist.EctoAdapter.new(@repo),
+                 do:
+                   Acx.Persist.PersistAdapter.update_policy(
+                     adapter,
+                     {:p, ["bob", "blog_post", "read"]},
+                     {:p, ["bob", "blog_post", "create"]}
+                   )
+               )
+    end
   end
 end

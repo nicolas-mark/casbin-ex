@@ -4,4 +4,5 @@ defprotocol Acx.Persist.PersistAdapter do
   def remove_policy(adapter, policy)
   def remove_filtered_policy(adapter, key, idx, attrs)
   def save_policies(adapter, policies)
+  def update_policy(adapter, policy, updated_policy)
 end

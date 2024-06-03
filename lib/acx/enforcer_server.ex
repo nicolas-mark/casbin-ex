@@ -49,6 +49,10 @@ defmodule Acx.EnforcerServer do
     GenServer.call(via_tuple(ename), {:add_policy, {key, attrs}})
   end
 
+  def update_policy(ename, {_key, _attrs} = policy, {_new_key, _new_attrs} = updated_policy) do
+    GenServer.call(via_tuple(ename), {:update_policy, policy, updated_policy})
+  end
+
   @doc """
   Removes the matching policy rule or rules with key given by `key` and a list of
   attribute values `attr_values` to the enforcer.
@@ -246,6 +250,21 @@ defmodule Acx.EnforcerServer do
       {:ok, new_enforcer} ->
         :ets.insert(:enforcers_table, {self_name(), new_enforcer})
         {:reply, :ok, new_enforcer}
+
+      new_enforcer ->
+        :ets.insert(:enforcers_table, {self_name(), new_enforcer})
+        {:reply, :ok, new_enforcer}
+    end
+  end
+
+  def handle_call(
+        {:update_policy, {_key, _attrs} = rule, {_new_key, _new_attrs} = new_rule},
+        _from,
+        enforcer
+      ) do
+    case Enforcer.update_policy(enforcer, rule, new_rule) do
+      {:error, reason} ->
+        {:reply, {:error, reason}, enforcer}
 
       new_enforcer ->
         :ets.insert(:enforcers_table, {self_name(), new_enforcer})
