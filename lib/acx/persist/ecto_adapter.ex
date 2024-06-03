@@ -161,6 +161,26 @@ defmodule Acx.Persist.EctoAdapter do
       end
     end
 
+    def update_policy(%Acx.Persist.EctoAdapter{repo: nil}, _) do
+      {:error, "repo is not set"}
+    end
+
+    def update_policy(
+          %Acx.Persist.EctoAdapter{repo: repo} = adapter,
+          {_key, _attrs} = policy,
+          {_new_key, _new_attrs} = updated_policy
+        ) do
+      with policy <- CasbinRule.policy_to_map(policy),
+           %CasbinRule{} = rule <- repo.get_by(CasbinRule, policy),
+           updated_policy <- CasbinRule.policy_to_map(updated_policy) do
+        CasbinRule.changeset(rule, updated_policy)
+        |> repo.update()
+      else
+        {:error, %Ecto.Changeset{errors: errors}} ->
+          {:error, errors}
+      end
+    end
+
     @doc """
     Removes all rules matching the provided attributes. If a subset of attributes
     are provided it will remove all matching records, i.e. if only a subj is provided
