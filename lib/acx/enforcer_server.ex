@@ -49,8 +49,8 @@ defmodule Acx.EnforcerServer do
     GenServer.call(via_tuple(ename), {:add_policy, {key, attrs}})
   end
 
-  def update_policy(ename, {_key, _attrs} = policy) do
-    GenServer.call(via_tuple(ename), {:update_policy, policy})
+  def update_policy(ename, {_key, _attrs} = policy, {_new_key, _new_attrs} = updated_policy) do
+    GenServer.call(via_tuple(ename), {:update_policy, policy, updated_policy})
   end
 
   @doc """
